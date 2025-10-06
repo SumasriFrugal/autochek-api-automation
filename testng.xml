@@ -16,6 +16,14 @@
 <!--                    <include name="RejectFranchise"/>-->
                 </methods>
             </class>
+            <class name="autochek_api_negative.UserService.UserServiceNegative">
+                <methods>
+<!--                    <include name="CreateFranchise"/>-->
+<!--                    <include name="UpdateFranchise"/>-->
+                    <include name="GetFranchiseByID"/>
+                    <include name="GetFranchiseList"/>
+                </methods>
+            </class>
         </classes>
     </test>
 </suite>
