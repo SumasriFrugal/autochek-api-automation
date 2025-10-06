@@ -1,0 +1,138 @@
+name: API Automation Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # needed to push to allure-reports
+
+env:
+  # Case-insensitive severities that BLOCK a PR on failure/broken
+  BLOCK_SEVERITIES: blocker,critical,sev1,p0
+
+jobs:
+  api-automation-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+          cache: maven
+
+      # Run tests and force Allure results path
+      - name: Run API Tests
+        run: mvn -B clean test -DsuiteXmlFile=testng.xml -Dallure.results.directory=target/allure-results
+
+      # Ensure we actually have new results (excluding history)
+      - name: Verify Allure results exist (excluding history)
+        id: verify
+        run: |
+          RESULT_COUNT=$(find target/allure-results -type f -name "*.json" -not -path "*/history/*" 2>/dev/null | wc -l | tr -d ' ')
+          echo "count=$RESULT_COUNT" >> $GITHUB_OUTPUT
+          if [ "$RESULT_COUNT" -eq 0 ]; then
+            echo "::error::No Allure test results were produced."
+            exit 1
+          fi
+
+      # Pull previous history so trendline works
+      - name: Checkout gh-pages (if exists)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+        continue-on-error: true
+
+      - name: Bring over previous Allure history
+        run: |
+          if [ -d "gh-pages/history" ]; then
+            mkdir -p target/allure-results/history
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
+      # Generate report
+      - name: Generate Allure Report
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate target/allure-results -o target/allure-report --clean
+
+      # Upload artifacts (always handy on PRs)
+      - name: Upload Allure HTML Report (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/allure-report
+
+      - name: Upload Allure History (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: target/allure-report/history
+
+      # Archive each run to allure-reports branch
+      - name: Compute archive directory
+        id: meta
+        run: |
+          TS=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          SHORT_SHA=${GITHUB_SHA::7}
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            REF="pr-${{ github.event.pull_request.number }}"
+          else
+            REF="${GITHUB_REF_NAME}"
+          fi
+          DEST="${TS}_${REF}_${SHORT_SHA}"
+          echo "dest_dir=$DEST" >> $GITHUB_OUTPUT
+          echo "Archiving to: $DEST"
+
+      - name: Archive report to allure-reports branch
+        if: steps.verify.outputs.count != '0' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: allure-reports
+          publish_dir: target/allure-report
+          destination_dir: ${{ steps.meta.outputs.dest_dir }}
+          keep_files: true
+          force_orphan: false
+
+      # Gate PRs on severe failures (blocks merge when branch protection requires this check)
+      - name: Gate PR on severe failures
+        if: always()
+        run: |
+          sudo apt-get update >/dev/null 2>&1 && sudo apt-get install -y jq >/dev/null 2>&1 || true
+          jq -r --arg block "${BLOCK_SEVERITIES}" '
+            ( $block | ascii_downcase | split(",") ) as $sevlist
+            |
+            select(.status=="failed" or .status=="broken")
+            |
+            (.labels // [] | map(select(.name=="severity") | .value | ascii_downcase) | .[0] // "unknown") as $sev
+            |
+            select( ($sevlist | index($sev)) != null )
+            |
+            [ $sev, .status, (.name // .fullName // "unknown") ] | @tsv
+          ' target/allure-results/*.json 2>/dev/null | tee .blocked.tsv
+
+          BLOCK_COUNT=$(wc -l < .blocked.tsv | tr -d ' ')
+          {
+            echo "### Severe test failures (blocking)"
+            echo ""
+            echo "| Severity | Status | Test |"
+            echo "|---|---|---|"
+            if [ "$BLOCK_COUNT" -gt 0 ]; then
+              awk -F'\t' '{printf("| %s | %s | %s |\n",$1,$2,$3)}' .blocked.tsv
+            else
+              echo "| — | — | — |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "$BLOCK_COUNT" -gt 0 ]; then
+            echo "::error::Severe test failures detected ($BLOCK_COUNT). Blocking this PR."
+            exit 1
+          fi
