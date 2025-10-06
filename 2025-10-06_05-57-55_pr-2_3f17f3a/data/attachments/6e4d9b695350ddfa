@@ -1,0 +1,54 @@
+HTTP/1.1 200 OK
+Date: Mon, 06 Oct 2025 05:57:25 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 1061
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+Access-Control-Expose-Headers: set-cookie,Set-Cookie
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+Strict-Transport-Security: max-age=15724800; includeSubDomains
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0
+Set-Cookie: accessToken=s%3AeyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrNFYtcHpQMG0iLCJpYXQiOjE3NTk3MzAyNDEsImV4cCI6MTc5MTI2NjI0MX0.Dgzejqk5WEfxw-eTlFDcszJV3hf0pGR0y5vPBkQ32laCgAyngguj5r415VHwp395pEqu15R7wmcwBoB3UmyRKw.a57tPGc%2Bh9LbhlMfMv6B%2B0ZT2s8a0pxYx3xO7hxeXk8; Domain=.staging.myautochek.com; Path=/; Expires=Wed, 12 Sep 2125 05:57:25 GMT
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Sun, 05 Oct 2025 15:23:20 GMT
+ETag: W/"425-199b4f85e40"
+server: hide
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Autochek Financing Docs</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="description" content="Description"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"/>
+  </head>
+  <body>
+    <div id="app"/>
+    <script>
+    window.$docsify = {
+      name: 'Autochek Financing',
+      themeColor: '#FEBF54',
+      logo: 'https://storage.googleapis.com/autochek-staging/74e0528e-1e4d-4dd5-b1b8-be40dc7c0028-Screenshot%202020-12-08%20at%2011.29.41.png',
+      copyCode: {
+        buttonText: 'Copy to clipboard',
+        errorText: 'Error',
+        successText: 'Copied'
+      }
+    }
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"/>
+    <script src="https://unpkg.com/docsify-plugin-flexible-alerts"/>
+    <script src="https://unpkg.com/docsify-copy-code@2"/>
+  </body>
+</html>
