@@ -1,0 +1,256 @@
+HTTP/1.1 200 OK
+Date: Mon, 06 Oct 2025 05:50:34 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 1657
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+Access-Control-Expose-Headers: set-cookie,Set-Cookie
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+Strict-Transport-Security: max-age=15724800; includeSubDomains
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0
+Set-Cookie: accessToken=s%3AeyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiItUHEtNUlHNUgiLCJpYXQiOjE3NTk3Mjk4MjgsImV4cCI6MTc5MTI2NTgyOH0.94kRHTYOvXftOT1s0nwB2wfQAKq89YYU_-8ZZJuAyumum9uBkSim3PYIRfd4uXeq45ow0PODPv7hr4Fu2v7Ncw.bc9x%2BrAy%2FmJRCukGW5qsEJNq%2BxLLrnGsqoKNTJwBZRA; Domain=.staging.myautochek.com; Path=/; Expires=Wed, 12 Sep 2125 05:50:33 GMT
+ETag: W/"679-ufssndvDL3Y9lQK9mBAxj75A7o8"
+server: hide
+
+{
+    "users": [
+        
+    ],
+    "documents": [
+        
+    ],
+    "dsas": [
+        
+    ],
+    "openingDaysAndTime": [
+        
+    ],
+    "staffs": [
+        
+    ],
+    "pictures": [
+        
+    ],
+    "id": "5NWk6OAsH",
+    "name": "Frugal Automation",
+    "owner": "diyrHzEg6",
+    "email": "test1@gmail.com47844@mail.com",
+    "phonenumber": "2.34801E+1147844",
+    "bankName": "GTBank",
+    "accountName": "Acc1",
+    "accountBvn": 1122347844,
+    "status": "pending",
+    "contract": "pending",
+    "type": "dealer",
+    "subscriptionStatus": false,
+    "accountNumber": "123456789047844",
+    "ownerInfo": {
+        "roles": [
+            
+        ],
+        "deviceTokens": [
+            
+        ],
+        "id": "diyrHzEg6",
+        "firstname": "esha 13",
+        "lastname": "reddy",
+        "email": "esharedddy@frugaltestingin.com",
+        "primaryPhone": "23412345689",
+        "createdBy": "",
+        "referrerCode": "X22RYC52",
+        "country": "NG",
+        "active": true,
+        "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+        "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+        "receiveNotification": true
+    },
+    "displayAddress": "Addr1",
+    "address": "12B Awolowo Rd (Lekki Phase 1), 100001",
+    "hasAssociation": false,
+    "longitude": 3.379199981689453,
+    "latitude": 6.524400234222412,
+    "onboardingSource": {
+        "roles": [
+            
+        ],
+        "deviceTokens": [
+            
+        ],
+        "id": "diyrHzEg6",
+        "firstname": "esha 13",
+        "lastname": "reddy",
+        "email": "esharedddy@frugaltestingin.com",
+        "primaryPhone": "23412345689",
+        "createdBy": "",
+        "referrerCode": "X22RYC52",
+        "country": "NG",
+        "active": true,
+        "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+        "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+        "receiveNotification": true
+    },
+    "mapAddress": "Lagos",
+    "isAnchor": false,
+    "forCollateralInspection": false,
+    "createdAt": "Mon Oct 06 2025 05:50:31 GMT+0000 (Coordinated Universal Time)",
+    "houseNo": "12B",
+    "zipCode": "100001",
+    "streetName": "Awolowo Rd",
+    "nearestLandmark": "Lekki Phase 1"
+}
+HTTP/1.1 200 OK
+Date: Mon, 06 Oct 2025 05:50:34 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 2503
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+Access-Control-Expose-Headers: set-cookie,Set-Cookie
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+Strict-Transport-Security: max-age=15724800; includeSubDomains
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0
+Set-Cookie: accessToken=s%3AeyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiItUHEtNUlHNUgiLCJpYXQiOjE3NTk3Mjk4MjgsImV4cCI6MTc5MTI2NTgyOH0.94kRHTYOvXftOT1s0nwB2wfQAKq89YYU_-8ZZJuAyumum9uBkSim3PYIRfd4uXeq45ow0PODPv7hr4Fu2v7Ncw.bc9x%2BrAy%2FmJRCukGW5qsEJNq%2BxLLrnGsqoKNTJwBZRA; Domain=.staging.myautochek.com; Path=/; Expires=Wed, 12 Sep 2125 05:50:34 GMT
+ETag: W/"9c7-BzHza0eEJE5k5lPzJi1IpLU9KkM"
+server: hide
+
+{
+    "users": [
+        {
+            "roles": [
+                
+            ],
+            "deviceTokens": [
+                
+            ],
+            "id": "diyrHzEg6",
+            "firstname": "esha 13",
+            "lastname": "reddy",
+            "email": "esharedddy@frugaltestingin.com",
+            "primaryPhone": "23412345689",
+            "createdBy": "",
+            "referrerCode": "X22RYC52",
+            "country": "NG",
+            "active": true,
+            "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+            "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+            "receiveNotification": true
+        }
+    ],
+    "documents": [
+        
+    ],
+    "dsas": [
+        
+    ],
+    "openingDaysAndTime": [
+        
+    ],
+    "staffs": [
+        {
+            "roles": [
+                
+            ],
+            "deviceTokens": [
+                
+            ],
+            "id": "diyrHzEg6",
+            "firstname": "esha 13",
+            "lastname": "reddy",
+            "email": "esharedddy@frugaltestingin.com",
+            "primaryPhone": "23412345689",
+            "createdBy": "",
+            "referrerCode": "X22RYC52",
+            "country": "NG",
+            "active": true,
+            "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+            "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+            "receiveNotification": true
+        }
+    ],
+    "pictures": [
+        
+    ],
+    "id": "Ap5jX6eqy",
+    "name": "Frugal Automation 07",
+    "owner": "diyrHzEg6",
+    "email": "test1@gmail.com65893@mail.com",
+    "phonenumber": "2.34801E+1265893",
+    "bankName": "Autobank",
+    "accountName": "TestUser",
+    "accountBvn": 1962306597,
+    "status": "pending",
+    "contract": "pending",
+    "type": "dealer",
+    "subscriptionStatus": false,
+    "accountNumber": "12345678965893",
+    "ownerInfo": {
+        "roles": [
+            
+        ],
+        "deviceTokens": [
+            
+        ],
+        "id": "diyrHzEg6",
+        "firstname": "esha 13",
+        "lastname": "reddy",
+        "email": "esharedddy@frugaltestingin.com",
+        "primaryPhone": "23412345689",
+        "createdBy": "",
+        "referrerCode": "X22RYC52",
+        "country": "NG",
+        "active": true,
+        "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+        "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+        "receiveNotification": true
+    },
+    "displayAddress": "123 Test St",
+    "address": "12B Allen Avenue (Near Ikeja Mall), 100001",
+    "hasAssociation": false,
+    "longitude": 3.379199981689453,
+    "latitude": 6.524400234222412,
+    "onboardingSource": {
+        "roles": [
+            
+        ],
+        "deviceTokens": [
+            
+        ],
+        "id": "diyrHzEg6",
+        "firstname": "esha 13",
+        "lastname": "reddy",
+        "email": "esharedddy@frugaltestingin.com",
+        "primaryPhone": "23412345689",
+        "createdBy": "",
+        "referrerCode": "X22RYC52",
+        "country": "NG",
+        "active": true,
+        "createdAt": "Thu Jun 26 2025 07:49:55 GMT+0000 (Coordinated Universal Time)",
+        "updatedAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+        "receiveNotification": true
+    },
+    "mapAddress": "Ikeja Center",
+    "isAnchor": true,
+    "forCollateralInspection": false,
+    "createdAt": "Mon Oct 06 2025 05:50:33 GMT+0000 (Coordinated Universal Time)",
+    "houseNo": "12B",
+    "zipCode": "100001",
+    "streetName": "Allen Avenue",
+    "nearestLandmark": "Near Ikeja Mall"
+}
