@@ -1,0 +1,14 @@
+Request method:	GET
+Request URI:	https://api.staging.myautochek.com/v1/franchise?page_size=50&country=%22KE%27%3B%20DROP%20TABLE%20franchise%3B--%22&status=approved
+Proxy:			<none>
+Request params:	<none>
+Query params:	page_size=50
+				country="KE'; DROP TABLE franchise;--"
+				status=approved
+Form params:	<none>
+Path params:	<none>
+Headers:		Authorization=Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrNFYtcHpQMG0iLCJpYXQiOjE3NTk3MjM5MjgsImV4cCI6MTc5MTI1OTkyOH0.KJJJV_FHH98t-jP3OFjpfFtxf4TtzNIhUGV8R9Zb72y5X-_LrvmWbZhBNZPeX9MmkuKQy-YPSg14GQZS-hQ3YA
+				Accept=*/*
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
