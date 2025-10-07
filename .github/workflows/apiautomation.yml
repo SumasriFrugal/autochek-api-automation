@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write      # needed to push to gh-pages
+  contents: write
 
 env:
   BLOCK_SEVERITIES: blocker,critical,sev1,p0
@@ -14,7 +14,6 @@ env:
 jobs:
   api-automation-tests:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,8 +28,7 @@ jobs:
       - name: Run API Tests
         run: mvn -B clean test -DsuiteXmlFile=testng.xml -Dallure.results.directory=target/allure-results
 
-      # Verify allure results exist
-      - name: Verify Allure results exist (excluding history)
+      - name: Verify Allure results exist
         id: verify
         run: |
           RESULT_COUNT=$(find target/allure-results -type f -name "*.json" -not -path "*/history/*" 2>/dev/null | wc -l | tr -d ' ')
@@ -40,54 +38,102 @@ jobs:
             exit 1
           fi
 
-      # --- Pull previous history from gh-pages branch ---
-      - name: Checkout gh-pages branch (if exists)
+      # Pull prior history from gh-pages (the public site) to preserve trends
+      - name: Checkout gh-pages (if exists)
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
         continue-on-error: true
 
-      - name: Bring over previous Allure history
+      - name: Restore Allure history
         run: |
           mkdir -p target/allure-results/history
           if [ -d "gh-pages/history" ]; then
-            echo "Found previous history in gh-pages. Copying..."
             cp -r gh-pages/history/* target/allure-results/history/ || true
-          else
-            echo "No previous history available."
+          elif [ -d "gh-pages/latest/history" ]; then
+            cp -r gh-pages/latest/history/* target/allure-results/history/ || true
           fi
-      # ---------------------------------------------------
-
-      - name: Install Allure CLI
-        run: |
-          npm install -g allure-commandline --save-dev
 
       - name: Generate Allure Report
-        run: allure generate target/allure-results -o target/allure-report --clean
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate target/allure-results -o target/allure-report --clean
 
-      - name: Upload Allure Report (artifact)
+      - name: Upload Allure HTML (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: target/allure-report
 
-      # ---------- Publish report to GitHub Pages ----------
-      - name: Publish Allure report to gh-pages
+      - name: Upload Allure history (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: target/allure-report/history
+
+      # Archive to allure-reports branch (timestamped + latest)
+      - name: Compute archive directory
+        id: meta
+        run: |
+          TS=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          SHORT_SHA=${GITHUB_SHA::7}
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            REF="pr-${{ github.event.pull_request.number }}"
+          else
+            REF="${GITHUB_REF_NAME}"
+          fi
+          echo "dest_dir=${TS}_${REF}_${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Archive to allure-reports/<timestamped>
+        uses: peaceiris/actions-gh-pages@v3
+        if: steps.verify.outputs.count != '0' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: allure-reports
+          publish_dir: target/allure-report
+          destination_dir: ${{ steps.meta.outputs.dest_dir }}
+          keep_files: true
+          force_orphan: false
+
+      - name: Update allure-reports/latest
+        uses: peaceiris/actions-gh-pages@v3
+        if: steps.verify.outputs.count != '0' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: allure-reports
+          publish_dir: target/allure-report
+          destination_dir: latest
+          keep_files: true
+          force_orphan: false
+
+      # Publish publicly to gh-pages (this is the URL you can open)
+      - name: Publish to GitHub Pages
         if: steps.verify.outputs.count != '0'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: target/allure-report
-          keep_files: true              # keeps previous history directory
-          force_orphan: false           # maintain history
-      # -----------------------------------------------------
+          force_orphan: true
 
+      - name: Post public link to summary
+        run: |
+          REPO="${{ github.repository }}"
+          OWNER="${REPO%%/*}"
+          NAME="${REPO##*/}"
+          URL="https://${OWNER}.github.io/${NAME}/"
+          {
+            echo "### Allure Report (GitHub Pages)"
+            echo ""
+            echo "[Open report](${URL})"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Gate PR on severe failures
       - name: Gate PR on severe failures
         if: always()
         run: |
-          sudo apt-get update -y >/dev/null 2>&1 && sudo apt-get install -y jq >/dev/null 2>&1 || true
+          sudo apt-get update >/dev/null 2>&1 && sudo apt-get install -y jq >/dev/null 2>&1 || true
           jq -r --arg block "${BLOCK_SEVERITIES}" '
             ( $block | ascii_downcase | split(",") ) as $sevlist
             |
@@ -99,11 +145,10 @@ jobs:
             |
             [ $sev, .status, (.name // .fullName // "unknown") ] | @tsv
           ' target/allure-results/*.json 2>/dev/null | tee .blocked.tsv
-
           BLOCK_COUNT=$(wc -l < .blocked.tsv | tr -d ' ')
           {
-            echo "### Severe test failures (blocking)"
             echo ""
+            echo "### Severe test failures (blocking)"
             echo "| Severity | Status | Test |"
             echo "|---|---|---|"
             if [ "$BLOCK_COUNT" -gt 0 ]; then
@@ -112,7 +157,6 @@ jobs:
               echo "| — | — | — |"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-
           if [ "${{ github.event_name }}" = "pull_request" ] && [ "$BLOCK_COUNT" -gt 0 ]; then
             echo "::error::Severe test failures detected ($BLOCK_COUNT). Blocking this PR."
             exit 1
