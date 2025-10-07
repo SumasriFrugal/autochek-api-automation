@@ -14,6 +14,7 @@ env:
 jobs:
   api-automation-tests:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,23 +39,22 @@ jobs:
             exit 1
           fi
 
-      # Pull prior history from gh-pages (the public site) to preserve trends
+      # --- Pull previous Pages to restore history and to append our index.html ---
       - name: Checkout gh-pages (if exists)
         uses: actions/checkout@v4
         with:
           ref: gh-pages
-          path: gh-pages
+          path: ghp
         continue-on-error: true
 
-      - name: Restore Allure history
+      - name: Restore Allure history from previous latest
         run: |
           mkdir -p target/allure-results/history
-          if [ -d "gh-pages/history" ]; then
-            cp -r gh-pages/history/* target/allure-results/history/ || true
-          elif [ -d "gh-pages/latest/history" ]; then
-            cp -r gh-pages/latest/history/* target/allure-results/history/ || true
+          if [ -d "ghp/latest/history" ]; then
+            cp -r ghp/latest/history/* target/allure-results/history/ || true
           fi
 
+      # --- Generate report for this run ---
       - name: Generate Allure Report
         run: |
           npm install -g allure-commandline --save-dev
@@ -72,7 +72,7 @@ jobs:
           name: allure-history
           path: target/allure-report/history
 
-      # Archive to allure-reports branch (timestamped + latest)
+      # --- Compute directory names for archiving on gh-pages ---
       - name: Compute archive directory
         id: meta
         run: |
@@ -83,53 +83,80 @@ jobs:
           else
             REF="${GITHUB_REF_NAME}"
           fi
-          echo "dest_dir=${TS}_${REF}_${SHORT_SHA}" >> $GITHUB_OUTPUT
+          DEST="${TS}_${REF}_${SHORT_SHA}"
+          echo "dest_dir=$DEST" >> $GITHUB_OUTPUT
+          echo "timestamp=$TS" >> $GITHUB_OUTPUT
 
-      - name: Archive to allure-reports/<timestamped>
-        uses: peaceiris/actions-gh-pages@v3
-        if: steps.verify.outputs.count != '0' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: allure-reports
-          publish_dir: target/allure-report
-          destination_dir: ${{ steps.meta.outputs.dest_dir }}
-          keep_files: true
-          force_orphan: false
+      # --- Prepare gh-pages working tree: copy this run + update latest + rebuild index.html ---
+      - name: Prepare gh-pages content
+        run: |
+          # Ensure working tree exists
+          mkdir -p ghp
 
-      - name: Update allure-reports/latest
-        uses: peaceiris/actions-gh-pages@v3
-        if: steps.verify.outputs.count != '0' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: allure-reports
-          publish_dir: target/allure-report
-          destination_dir: latest
-          keep_files: true
-          force_orphan: false
+          # Paths
+          DEST="${{ steps.meta.outputs.dest_dir }}"
+          mkdir -p "ghp/${DEST}"
+          rm -rf ghp/latest || true
+          mkdir -p ghp/latest
 
-      # Publish publicly to gh-pages (this is the URL you can open)
-      - name: Publish to GitHub Pages
+          # Copy current report to timestamped dir and to latest
+          cp -r target/allure-report/* "ghp/${DEST}/"
+          cp -r target/allure-report/* "ghp/latest/"
+
+          # Basic listing index.html at repo root with Latest highlighted
+          {
+            echo "<!doctype html><html><head><meta charset='utf-8'>"
+            echo "<title>Allure Reports</title>"
+            echo "<style>body{font-family:system-ui,Arial} ul{line-height:1.8} .muted{color:#666}</style>"
+            echo "</head><body>"
+            echo "<h1>Allure Reports</h1>"
+            echo "<p><strong>Latest:</strong> <a href='./latest/'>Open</a> <span class='muted'>(auto-updated)</span></p>"
+            echo "<h2>All Runs</h2><ul>"
+            # List timestamped directories sorted descending by name
+            find ghp -maxdepth 1 -type d -printf '%f\n' 2>/dev/null \
+              | grep -Ev '^\.$|^\.git$|^latest$' \
+              | sort -r \
+              | while read d; do
+                  if [ -d "ghp/$d" ]; then
+                    echo "<li><a href='./$d/'>$d</a></li>"
+                  fi
+                done
+            echo "</ul>"
+            echo "<p class='muted'>Generated $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>"
+            echo "</body></html>"
+          } > ghp/index.html
+
+          # Keep Jekyll from touching assets
+          if [ ! -f ghp/.nojekyll ]; then echo > ghp/.nojekyll; fi
+
+      # --- Publish entire ghp tree to gh-pages (keeps all timestamped runs) ---
+      - name: Publish to gh-pages (timestamped + latest + index)
         if: steps.verify.outputs.count != '0'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: target/allure-report
-          force_orphan: true
+          publish_dir: ghp
+          keep_files: true
+          force_orphan: false
 
-      - name: Post public link to summary
+      # --- Post links into the run Summary ---
+      - name: Post hosted links to Summary
         run: |
           REPO="${{ github.repository }}"
           OWNER="${REPO%%/*}"
           NAME="${REPO##*/}"
-          URL="https://${OWNER}.github.io/${NAME}/"
+          BASE="https://${OWNER}.github.io/${NAME}"
+          THIS="${BASE}/${{ steps.meta.outputs.dest_dir }}/"
+          LATEST="${BASE}/latest/"
           {
-            echo "### Allure Report (GitHub Pages)"
+            echo "### Allure Report Links"
             echo ""
-            echo "[Open report](${URL})"
+            echo "- [Open latest](${LATEST})"
+            echo "- [Open this run](${THIS})"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # Gate PR on severe failures
+      # --- PR gating on severe failures (unchanged) ---
       - name: Gate PR on severe failures
         if: always()
         run: |
