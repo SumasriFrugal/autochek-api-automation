@@ -141,19 +141,17 @@ jobs:
           force_orphan: false
 
       # --- Post links into the run Summary ---
-      - name: Post hosted links to Summary
+      - name: Post hosted link to Summary
         run: |
           REPO="${{ github.repository }}"
           OWNER="${REPO%%/*}"
           NAME="${REPO##*/}"
           BASE="https://${OWNER}.github.io/${NAME}"
           THIS="${BASE}/${{ steps.meta.outputs.dest_dir }}/"
-          LATEST="${BASE}/latest/"
           {
-            echo "### Allure Report Links"
+            echo "### Allure Report"
             echo ""
-            echo "- [Open latest](${LATEST})"
-            echo "- [Open this run](${THIS})"
+            echo "[Open report](${THIS})"
           } >> "$GITHUB_STEP_SUMMARY"
 
       # --- PR gating on severe failures (unchanged) ---
