@@ -1,0 +1,12 @@
+Request method:	GET
+Request URI:	https://api.staging.myautochek.com/v1/franchise/23ckwrt0z
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		Authorization=Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrNFYtcHpQMG0iLCJpYXQiOjE3NTk5MDc0NTUsImV4cCI6MTc5MTQ0MzQ1NX0.z7pvVT6V_jIeJsA_0sUssF3fjboFgrVt1PeK5WNzgBskfxwb96O6I7mPxAgIFmaRMX4W0FzjjCC1z6mvXX5WMw
+				Accept=*/*
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
